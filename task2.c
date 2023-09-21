@@ -1,110 +1,104 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 
-long power(int a, int b)
+int power(int a, int b) 
 {
     int c = 1;
     for (int i = 0; i < b; i++)
-    {
         c = c * a;
-    }
     return c;
 }
 
-int ecuation(int a, int b, char c)
+int equation(int a, int b, char c) 
 {
-    if (c == '+')
-        return a + b;
-    if (c == '-')
-        return a - b;
-    if (c == '*')
-        return a * b;
-    if (c == '/')
-        return a / b;
+    if (c == '+') return a + b;
+    if (c == '-') return a - b;
+    if (c == '*') return a * b;
+    if (c == '/') return a / b;
 }
 
-void getInstruction(int nr)
+void getInstruction(int number) 
 {
-    int n = 0, dim = 0, i = 31;
+    int bitSize = 32;
+    int n = 1, dim = 1;
+    int bitIndex = bitSize - 1, bit;
 
-    for (int j = 0, p = 4; j < 3; j++, p /= 2)
+    printf("Binary: ");
+    for (int i = bitSize - 1; i > 0; i--) 
     {
-        int k = nr >> i;
-        n += p * (k & 1);
-        i--;
+        bit = number >> i;
+        printf("%d", (bit & true));
     }
-    n += 1;
+
+    for (int i = 0, p = 4; i < 3; i++, bitIndex += -1, p /= 2) 
+    {
+        bit = number >> bitIndex;
+        n += p * (bit & true);
+    }
+
     char op[n];
 
-    for (int j = 0; j < n; j++)
+    for (int i = 0; i < n; i++, bitIndex += -2) 
     {
-        int a = nr >> i;
-        i += -1;
-        int b = nr >> i;
-        i += -1;
+        int var = ((number >> bitIndex) & true) * 2;
+        var += ((number >> (bitIndex - 1)) & true) * 1;
 
-        int temp = (a & 1) * 2 + (b & 1);
-
-        if (temp == 0)
-            op[j] = '+';
-        if (temp == 1)
-            op[j] = '-';
-        if (temp == 2)
-            op[j] = '*';
-        if (temp == 3)
-            op[j] = '/';
+        if (var == 0) op[i] = '+';
+        if (var == 1) op[i] = '-';
+        if (var == 2) op[i] = '*';
+        if (var == 3) op[i] = '/';
     }
 
-    for (int j = 0, p = 8; j < 4; j++, p /= 2)
+    for (int i = 0, p = 8; i < 4; i++, p /= 2, bitIndex += -1) 
     {
-        int k = nr >> i;
-        dim += p * (k & 1);
-        i--;
+        int bit = number >> bitIndex;
+        dim += p * (bit & true);
     }
-    dim += 1;
 
-    int numbers; 
-    if ((( (n+1) * dim) % 16) != 0)
-        numbers = ((n+1) * dim)/16 + 1;
-    else numbers = ((n+1) * dim)/16;
-    
-    int v[numbers];
-    int operands[numbers * 16/dim];
-    int operandsIndex = 0; 
+    printf("\nInstruction: %d ", n);
+    for (int i = 0; i < n; i++) printf("%c ", op[i]);
+        printf("%d\n", dim);
+
+    int numbers;
+    if ((((n + 1) * dim) % 16) != 0)
+        numbers = (n + 1) * dim / 16 + 1;
+    else numbers = ((n+1) * dim) / 16;
+
+    printf("Numbers to insert: %d\n", numbers);
+
+    int values[numbers];
+    int operands[numbers * (16 / dim)];
+    int operandsIndex = 0;
 
     for (int i = 0; i < numbers; i++)
-    {
-        scanf ("%d", &v[i]);
-    }
+        scanf("%d", &values[i]);
 
-    int p;
-    for (int i = 0; i < numbers; i++)
+    for (int i = 0; i < numbers; i++) 
     {
-        for (int j = 15; j > 0; j -= dim )
+        for (int j = bitSize / 2 - 1; j > 0; j -= dim) 
         {
-            int ps = 0; 
-            for (int k = j, p = power(2, dim - 1); k > j-dim; k--, p = p/2)
+            int total = 0;
+            for (int index = j, p = power(2, dim - 1); index > j - dim; index--, p = p / 2) 
             {
-                int a = v[i] >> k;
-                ps += p * (a & 1);
+                int bit = values[i] >> index;
+                total += p * (bit & 1);
             }
-            
-            operands[operandsIndex] = ps;
-            operandsIndex ++;
+            operands[operandsIndex] = total;
+            operandsIndex++;
         }
     }
 
-    int result = operands[0]; 
-    for (int i = 1; i < n+1; i++)
+    int result = operands[0];
+    for (int i = 1; i < n + 1; i++) 
     {
-        result = ecuation(result, operands[i], op[i-1]);
+        result = equation(result, operands[i], op[i - 1]);
     }
-    printf("%d\n", result);
+    printf("Result: %d\n", result);
 }
 
-int main()
+int main() 
 {
     int nr = 0;
     scanf("%d", &nr);
