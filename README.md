@@ -1,5 +1,4 @@
-## Microprocesor - Proiect realizat de Andreea-Viktorya Dobre în cadrul Facultății de Automatică și Calculatoare
-
+## Microprocesor
 În acest proiect se implementează un interpretor de biți similar unui procesor. 
 Acesta va avea capacitatea de a decodifică și execută instrucțiuni simple de adunare, scădere, înmulțire și împărțire. 
 La nivelul cel mai de bază, informația este stocată sub formă de biți. Pentru un procesor această informație se repartizează în 2 categorii: instrucțiuni și date. 
