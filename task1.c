@@ -1,58 +1,60 @@
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 
-void getInstruction(int number) 
+void getInstruction(int nr)
 {
-    int bitSize = 32;
-    int n = 1, dim = 1;
-    int bitIndex = bitSize - 1, bit;
+    int n = 0, dim = 0, i = 31;
 
-    printf("Binary: ");
-    for (int i = bitSize - 1; i > 0; i--) 
+    for (int j = 0, p = 4; j < 3; j++, p /= 2)
     {
-        bit = number >> i;
-        printf("%d", (bit & true));
+        int k = nr >> i;
+        n += p * (k & 1);
+        i--;
+    }
+    n += 1;
+    char op[n];
+
+    for (int j = 0; j < n; j++)
+    {
+        int a = nr >> i;
+        i += -1;
+        int b = nr >> i;
+        i += -1;
+
+        int temp = (a & 1) * 2 + (b & 1);
+
+        if (temp == 0)
+            op[j] = '+';
+        if (temp == 1)
+            op[j] = '-';
+        if (temp == 2)
+            op[j] = '*';
+        if (temp == 3)
+            op[j] = '/';
     }
 
-    for (int i = 0, p = 4; i < 3; i++, bitIndex += -1, p /= 2) 
+    for (int j = 0, p = 8; j < 4; j++, p /= 2)
     {
-        bit = number >> bitIndex;
-        n += p * (bit & true);
+        int k = nr >> i;
+        dim += p * (k & 1);
+        i--;
     }
+    dim += 1;
 
-    char op[n]
-
-    for (int i = 0; i < n; i++, bitIndex += -2) 
-    {
-        int var = ((number >> bitIndex) & true) * 2;
-        var += ((number >> (bitIndex - 1)) & true) * 1;
-
-        if (var == 0) op[i] = '+';
-        if (var == 1) op[i] = '-';
-        if (var == 2) op[i] = '*';
-        if (var == 3) op[i] = '/';
-    }
-
-    for (int i = 0, p = 8; i < 4; i++, p /= 2, bitIndex += -1) 
-    {
-        int bit = number >> bitIndex;
-        dim += p * (bit & true);
-    }
-
-    printf("\nInstruction: %d ", n);
-    for (int i = 0; i < n; i++) printf("%c ", op[i]);
+    printf("%d ", n);
+    for (int i = 0; i < n; i++)
+        printf("%c ", op[i]);
     printf("%d\n", dim);
 }
 
-int main() 
+int main()
 {
-    int number;
+    int nr = 0;
+    scanf("%d", &nr);
 
-    printf("Insert number: ");
-    scanf("%d", &number);
-
-    getInstruction(number);
+    getInstruction(nr);
 
     return 0;
 }
